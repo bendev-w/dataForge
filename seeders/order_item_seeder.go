@@ -5,10 +5,10 @@ import (
 	"log"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/jackc/pgx/v5"
+	"github.com/dataforge/db"
 )
 
-func seedOrderItems(ctx context.Context, tx pgx.Tx) error {
+func seedOrderItems(ctx context.Context, tx *db.Tx) error {
 	// Get all product IDs
 	log.Println("[OrderItems] Querying products...")
 	productRows, err := tx.Query(ctx, "SELECT id, price FROM products ORDER BY id")
@@ -30,8 +30,8 @@ func seedOrderItems(ctx context.Context, tx pgx.Tx) error {
 		}
 		products = append(products, p)
 	}
-	productRows.Close()  // Explicitly close before next query
-	
+	productRows.Close() // Explicitly close before next query
+
 	if err := productRows.Err(); err != nil {
 		return err
 	}
@@ -58,8 +58,8 @@ func seedOrderItems(ctx context.Context, tx pgx.Tx) error {
 		}
 		orderIDs = append(orderIDs, id)
 	}
-	orderRows.Close()  // Explicitly close before doing Exec
-	
+	orderRows.Close() // Explicitly close before doing Exec
+
 	if err := orderRows.Err(); err != nil {
 		return err
 	}

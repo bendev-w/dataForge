@@ -4,17 +4,17 @@ import (
 	"context"
 	"log"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/dataforge/db"
 )
 
-func SeedAll(ctx context.Context, conn *pgx.Conn) error {
+func SeedAll(ctx context.Context, conn *db.DB) error {
 	// Start transaction
 	log.Println("[Seeder] Starting transaction...")
 	tx, err := conn.Begin(ctx)
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback(ctx)
+	defer tx.Rollback()
 
 	// Seed in order due to foreign key dependencies (append mode - no deletes)
 	log.Println("[Seeder] Seeding customers...")
@@ -45,7 +45,7 @@ func SeedAll(ctx context.Context, conn *pgx.Conn) error {
 
 	// Commit transaction
 	log.Println("[Seeder] About to commit transaction...")
-	commitErr := tx.Commit(ctx)
+	commitErr := tx.Commit()
 	log.Printf("[Seeder] Commit result: err=%v", commitErr)
 	return commitErr
 }

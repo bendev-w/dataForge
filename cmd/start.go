@@ -9,7 +9,6 @@ import (
 	"github.com/dataforge/db"
 	"github.com/dataforge/seeders"
 	"github.com/spf13/cobra"
-	"github.com/jackc/pgx/v5"
 )
 
 var (
@@ -27,7 +26,7 @@ var startCmd = &cobra.Command{
 }
 
 func init() {
-	startCmd.Flags().StringVar(&dbURL, "db", "", "Database connection URL (e.g., postgres://localhost:5432/shop)")
+	startCmd.Flags().StringVar(&dbURL, "db", "", "Database URL (postgres://... or mysql://user:password@host:3306/database)")
 	startCmd.Flags().StringVar(&interval, "interval", "5s", "Interval between seeding operations (e.g., 5s, 1m, 10m)")
 
 	startCmd.MarkFlagRequired("db")
@@ -45,7 +44,7 @@ func runStart() error {
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %w", err)
 	}
-	defer conn.Close(context.Background())
+	defer conn.Close()
 
 	// Create schema
 	if err := db.InitializeSchema(context.Background(), conn); err != nil {
@@ -70,7 +69,7 @@ func runStart() error {
 	return nil
 }
 
-func seedDatabase(conn *pgx.Conn) {
+func seedDatabase(conn *db.DB) {
 	startTime := time.Now()
 	log.Println("Starting seeding cycle...")
 

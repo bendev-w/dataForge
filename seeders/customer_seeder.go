@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/jackc/pgx/v5"
+	"github.com/dataforge/db"
 )
 
-func seedCustomers(ctx context.Context, tx pgx.Tx) error {
-	const numCustomers = 10  // Reduced from 50
+func seedCustomers(ctx context.Context, tx *db.Tx) error {
+	const numCustomers = 10 // Reduced from 50
 
 	for i := 0; i < numCustomers; i++ {
 		person := gofakeit.Person()

@@ -7,8 +7,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/dataforge/db"
 )
 
 var paymentMethods = []string{
@@ -27,7 +26,7 @@ var paymentStatuses = []string{
 	"refunded",
 }
 
-func seedPayments(ctx context.Context, tx pgx.Tx) error {
+func seedPayments(ctx context.Context, tx *db.Tx) error {
 	// Get all orders
 	log.Println("[Payments] Querying orders...")
 	rows, err := tx.Query(ctx, "SELECT id, total_amount, order_date FROM orders")
@@ -50,8 +49,8 @@ func seedPayments(ctx context.Context, tx pgx.Tx) error {
 		}
 		orders = append(orders, o)
 	}
-	rows.Close()  // Explicitly close before doing Exec
-	
+	rows.Close() // Explicitly close before doing Exec
+
 	if err := rows.Err(); err != nil {
 		return err
 	}
@@ -67,13 +66,10 @@ func seedPayments(ctx context.Context, tx pgx.Tx) error {
 		// Payment date usually shortly after order date
 		paymentDate := order.orderDate.Add(time.Duration(gofakeit.Number(1, 48)) * time.Hour)
 
-		var dt pgtype.Timestamp
-		dt.Scan(paymentDate)
-
 		_, err := tx.Exec(ctx,
 			`INSERT INTO payments (order_id, amount, payment_method, status, transaction_id, created_at)
 			VALUES ($1, $2, $3, $4, $5, $6)`,
-			order.id, order.amount, method, status, transactionID, dt)
+			order.id, order.amount, method, status, transactionID, paymentDate)
 
 		if err != nil {
 			log.Printf("[Payments] Error inserting payment for order %d: %v", order.id, err)

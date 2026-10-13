@@ -7,7 +7,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "dataforge",
 	Short: "DataForge - Database seeding tool",
-	Long:  "DataForge is a powerful CLI tool for seeding PostgreSQL databases with realistic data at specified intervals",
+	Long:  "DataForge is a powerful CLI tool for seeding PostgreSQL and MySQL databases with realistic data at specified intervals",
 }
 
 func Execute() error {
@@ -16,4 +16,6 @@ func Execute() error {
 
 func init() {
 	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(clearCmd)
+	rootCmd.AddCommand(refreshCmd)
 }

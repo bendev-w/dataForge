@@ -6,8 +6,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/dataforge/db"
 )
 
 var orderStatuses = []string{
@@ -18,7 +17,7 @@ var orderStatuses = []string{
 	"cancelled",
 }
 
-func seedOrders(ctx context.Context, tx pgx.Tx) error {
+func seedOrders(ctx context.Context, tx *db.Tx) error {
 	// Get all customer IDs from the database
 	log.Println("[Orders] Querying customers...")
 	rows, err := tx.Query(ctx, "SELECT id FROM customers ORDER BY id")
@@ -35,8 +34,8 @@ func seedOrders(ctx context.Context, tx pgx.Tx) error {
 		}
 		customerIDs = append(customerIDs, id)
 	}
-	rows.Close()  // Explicitly close before doing Exec
-	
+	rows.Close() // Explicitly close before doing Exec
+
 	if err := rows.Err(); err != nil {
 		return err
 	}
@@ -47,7 +46,7 @@ func seedOrders(ctx context.Context, tx pgx.Tx) error {
 		return nil // No customers to create orders for
 	}
 
-	const ordersPerCustomer = 2  // Reduced from 5
+	const ordersPerCustomer = 2 // Reduced from 5
 
 	insertCount := 0
 	for _, customerID := range customerIDs {
@@ -61,13 +60,10 @@ func seedOrders(ctx context.Context, tx pgx.Tx) error {
 
 			address := gofakeit.Address().Address
 
-			var dt pgtype.Timestamp
-			dt.Scan(orderDate)
-
 			_, err := tx.Exec(ctx,
 				`INSERT INTO orders (customer_id, order_date, total_amount, status, shipping_address)
 				VALUES ($1, $2, $3, $4, $5)`,
-				customerID, dt, totalAmount, status, address)
+				customerID, orderDate, totalAmount, status, address)
 
 			if err != nil {
 				return err

@@ -1,6 +1,6 @@
 # DataForge - Database Seeding CLI Tool
 
-A powerful Go CLI tool for seeding PostgreSQL databases with realistic, lifelike data at specified intervals.
+A powerful Go CLI tool for seeding PostgreSQL and MySQL databases with realistic, lifelike data at specified intervals.
 
 ## Features
 
@@ -19,9 +19,9 @@ A powerful Go CLI tool for seeding PostgreSQL databases with realistic, lifelike
 ## Prerequisites
 
 - Go 1.21 or higher
-- PostgreSQL 12 or higher (or use the included Docker Compose setup)
+- PostgreSQL 12 or higher or MySQL 8.0 or higher (or use the included Docker Compose setup)
 - Docker & Docker Compose (optional, for PostgreSQL and Hasura)
-- A PostgreSQL database to seed
+- A PostgreSQL or MySQL database to seed
 
 ## Installation
 
@@ -33,38 +33,65 @@ go build -o dataforge.exe
 
 ## Usage
 
-### Start Seeding
+### Commands
+
+#### Start Seeding
+
+Continuously seed your database at specified intervals.
 
 ```bash
 dataforge start --db "postgres://user:password@localhost:5432/dbname" --interval 5s
+# MySQL
+dataforge start --db "mysql://user:password@localhost:3306/dbname" --interval 5s
 ```
 
-### Parameters
+**Parameters:**
+- `--db` (required): PostgreSQL or MySQL connection URL
+- `--interval` (optional): Seeding interval (default: `5s`, format: `5s`, `1m`, `10m`, `1h`)
 
-- `--db` (required): PostgreSQL connection URL
-  - Format: `postgres://user:password@host:port/dbname`
-  - Example: `postgres://postgres:password@localhost:5432/shop`
-  
-- `--interval` (optional): Seeding interval
-  - Default: `5s`
-  - Format: Go duration string (e.g., `5s`, `1m`, `10m`, `1h`)
-  - Examples: `5s`, `30s`, `1m`, `5m`, `10m`
-
-### Examples
-
-Seed every 5 seconds:
+**Examples:**
 ```bash
+# Seed every 5 seconds
 dataforge start --db postgres://localhost:5432/shop --interval 5s
-```
 
-Seed every 1 minute:
-```bash
+# Seed every 1 minute
 dataforge start --db postgres://localhost:5432/shop --interval 1m
+
+# Seed every 10 minutes
+dataforge start --db postgres://localhost:5432/shop --interval 10m
+
+# Seed MySQL every minute
+dataforge start --db mysql://dataforge:dataforge@localhost:3306/shop --interval 1m
 ```
 
-Seed every 10 minutes:
+#### Clear Database
+
+Remove all data from database tables (sequences will be reset to 1).
+
 ```bash
-dataforge start --db postgres://localhost:5432/shop --interval 10m
+dataforge clear --db "postgres://user:password@localhost:5432/dbname"
+# MySQL
+dataforge clear --db "mysql://user:password@localhost:3306/dbname"
+```
+
+**Example:**
+```bash
+dataforge clear --db postgres://localhost:5432/shop
+```
+
+#### Refresh Database
+
+Clear all existing data and seed with fresh new data (in one operation).
+
+```bash
+dataforge refresh --db "postgres://user:password@localhost:5432/dbname"
+# MySQL
+dataforge refresh --db "mysql://user:password@localhost:3306/dbname"
+```
+
+**Example:**
+```bash
+dataforge refresh --db postgres://localhost:5432/shop
 ```
 
 ## Hasura GraphQL Admin Console
@@ -211,6 +238,7 @@ DataForge/
 
 - `github.com/spf13/cobra` - CLI framework
 - `github.com/jackc/pgx/v5` - PostgreSQL driver
+- `github.com/go-sql-driver/mysql` - MySQL driver
 - `github.com/brianvoe/gofakeit/v6` - Fake data generation
 
 ## License

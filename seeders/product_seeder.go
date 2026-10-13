@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/jackc/pgx/v5"
+	"github.com/dataforge/db"
 )
 
 var productCategories = []string{
@@ -21,8 +21,8 @@ var productCategories = []string{
 	"Food & Beverage",
 }
 
-func seedProducts(ctx context.Context, tx pgx.Tx) error {
-	const numProducts = 20  // Reduced from 100
+func seedProducts(ctx context.Context, tx *db.Tx) error {
+	const numProducts = 20 // Reduced from 100
 
 	for i := 0; i < numProducts; i++ {
 		name := gofakeit.ProductName()

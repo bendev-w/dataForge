@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+  mysql:
+    image: mysql:8.4
+    container_name: dataforge-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: shop
+      MYSQL_USER: dataforge
+      MYSQL_PASSWORD: dataforge
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "dataforge", "-pdataforge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   postgres:
     image: postgres:15-alpine
     container_name: dataforge-postgres
@@ -34,4 +52,5 @@ services:
         condition: service_healthy
 
 volumes:
+  mysql_data:
   postgres_data:
