@@ -18,17 +18,44 @@ A powerful Go CLI tool for seeding PostgreSQL and MySQL databases with realistic
 
 ## Prerequisites
 
-- Go 1.21 or higher
 - PostgreSQL 12 or higher or MySQL 8.0 or higher (or use the included Docker Compose setup)
 - Docker & Docker Compose (optional, for PostgreSQL and Hasura)
 - A PostgreSQL or MySQL database to seed
 
 ## Installation
 
-### Build from Source
+No Go installation required.
+
+### Linux / macOS (curl)
 
 ```bash
-go build -o dataforge.exe
+curl -fsSL https://raw.githubusercontent.com/bendev-w/dataForge/main/install.sh | sh
+```
+
+Set `VERSION=v1.0.0` to pin a version or `INSTALL_DIR=...` to choose the location.
+
+### Windows (PowerShell)
+
+```powershell
+irm https://raw.githubusercontent.com/bendev-w/dataForge/main/install.ps1 | iex
+```
+
+### Manual download
+
+Download the archive for your OS/arch from the [Releases page](https://github.com/bendev-w/dataForge/releases), extract it, and put `dataforge` on your PATH.
+
+### Build from Source (requires Go 1.21+)
+
+```bash
+go build -o dataforge
+```
+
+### Publishing a release (maintainers)
+
+Push a version tag; GitHub Actions + GoReleaser build and publish binaries for Linux, macOS and Windows (amd64/arm64) with checksums.
+
+```bash
+git tag v1.0.0 && git push origin v1.0.0
 ```
 
 ## Usage
